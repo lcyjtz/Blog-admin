@@ -145,7 +145,7 @@
         <template slot-scope="scope">
           <el-switch
                   v-model="scope.row.issilence"
-                  @change="changeSilence(scope.row.issilence,scope.row.id)"
+                  @change="changeSilence(scope.row.issilence,scope.row.visitorid)"
                   active-color="#13ce66"
                   inactive-color="">
           </el-switch>
@@ -162,7 +162,7 @@
                       icon="el-icon-edit"
                       @click="editUserInfo(scope.row)">编辑
           </el-button>
-          <el-button  @click="deleteUser(scope.row.id)" type="danger" size="mini" icon="el-icon-delete">删除</el-button>
+          <el-button  @click="deleteUser(scope.row.visitorid)" type="danger" size="mini" icon="el-icon-delete">删除</el-button>
         </template>
         
       </el-table-column>
@@ -185,18 +185,18 @@
           <el-input clearable v-model="editUserForm.avatar" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户名" label-width="120px">
-          <el-input clearable v-model="editUserForm.username " autocomplete="off"></el-input>
+          <el-input clearable v-model="editUserForm.visitorname " autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="昵称" label-width="120px">
-          <el-input clearable v-model="editUserForm.nickname " autocomplete="off"></el-input>
+        <el-form-item label="Email" label-width="120px">
+          <el-input clearable v-model="editUserForm.email " autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户角色" label-width="120px">
           <el-select v-model="editUserForm.userAuth" placeholder="请选择">
             <el-option
-                    v-for="item in userAuthList"
-                    :key="item.userAuth"
-                    :label="item.userAuth"
-                    :value="item.userAuth">
+                    v-for="item in userRoleList"
+                    :key="item.roleName"
+                    :label="item.roleName"
+                    :value="item.roleName">
             </el-option>
           </el-select>
         </el-form-item>
@@ -211,27 +211,25 @@
 
 
     <el-dialog title="增加用户" :visible.sync="dialogFormVisible">
-      <el-form :model="addUserForm">
+      <el-form :model="visitor">
         <el-form-item label="用户名" label-width="120px" >
-          <el-input clearable v-model="addUserForm.username" autocomplete="off"></el-input>
+          <el-input clearable v-model="visitor.visitorname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" label-width="120px">
-          <el-input clearable v-model="addUserForm.password" autocomplete="off"></el-input>
+          <el-input clearable v-model="visitor.visitorpwd" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户头像url" label-width="120px">
-          <el-input clearable v-model="addUserForm.avatar" autocomplete="off"></el-input>
+          <el-input clearable v-model="visitor.avatar" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="用户昵称" label-width="120px">
-          <el-input clearable v-model="addUserForm.nickname" autocomplete="off"></el-input>
+        <el-form-item label="email" label-width="120px">
+          <el-input clearable v-model="visitor.email" autocomplete="off"></el-input>
         </el-form-item>
 
         <el-form-item label="用户角色" label-width="120px">
-          <el-select v-model="addUserForm.userRole" placeholder="请选择用户角色">
-            <el-option label="超级管理员" value="1"></el-option>
-            <el-option label="管理员" value="2"></el-option>
-            <el-option label="普通用户" value="3"></el-option>
-            <el-option label="游客" value="4"></el-option>
-            <el-option label="测试人员" value="5"></el-option>
+          <el-select v-model="visitor.visitorroleid" placeholder="请选择用户角色">
+            <el-option label="user(普通用户游客)" value="1"></el-option>
+            <el-option label="admin(管理员)" value="2"></el-option>
+            <el-option label="developer(超级管理员)" value="3"></el-option>
           </el-select>
         </el-form-item>
 
@@ -292,18 +290,18 @@
         current:1,
         editUserForm:{
           id:1,
+          visitorname:"",
+          visitorpwd:"",
           avatar:"",
-          nickname:"",
-          username:"",
-          userAuth:"",
+          email:"",
       },
-        addUserForm:{
-          username:"",
-          password:"",
+        visitor:{
+          visitorname:"",
+          visitorpwd:"",
           avatar:"",
-          nickname:"",
+          email:"",
           loginTypeId:null,
-          userRoleId:3,
+          visitorroleid:"",
           createTime:this.nowTime
         },
         editUser: false,    //修改用户数据
@@ -368,7 +366,7 @@
       // 点击确定修改按钮 交互数据
       async editUserInfoSure(){
          const {data} = await updateUserInfo(this.editUserForm);
-         if(data.success){
+         if(data.status){
            this.$message.success(data.message);
            this.editUser=false;
            //刷新列表
@@ -384,10 +382,11 @@
            type: 'warning'
         }).  then( async () => {
           const {data}= await  logicDeleteUserById(id);
-          this.$message({
-            type: data.success==true?'success':'error',
-            message: data.message
-          });
+           this.$message({
+           type: data.status==true?'success':'error',
+           message: data.message
+         });
+         this.getUserList()
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -396,12 +395,12 @@
         });
       },
      async addUser(){
-          const  {data}=await addUser(this.addUserForm);
-            if(data.success){
+          const  {data}=await addUser(this.visitor);
+            if(data.status){
               this.$message.success(data.message);
               this.getUserList();
             }else {
-              this.$message.success(data.message);
+              this.$message.error(data.message);
             }
        this.dialogFormVisible=false;
       },
