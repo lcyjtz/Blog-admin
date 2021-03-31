@@ -36,7 +36,7 @@ export  const updateSilenceById=(flag,id)=>{
  //通过id删除用户 逻辑删除
 export  const deleteById=(id)=>{
   return request({
-    url: "/userInfo/deleteById",
+    url: "/user/deleteByUserId",
     method: "delete",
     params: {
       id,
@@ -54,7 +54,7 @@ export  const updateUserInfo=(data)=>{
 //通过用户id 逻辑删除该用户
 export  const logicDeleteUserById=(id)=>{
   return request({
-    url: "/userInfo/logicDeleteUser",
+    url: "/user/deleteByUserId",
     method: "delete",
     params:{
       id,
@@ -62,12 +62,17 @@ export  const logicDeleteUserById=(id)=>{
   })
 }
 //增加用户
-export  const addUser=(data)=>{
+export  const addUser=(visitor)=>{
   return request({
-    url: "/userInfo/addUser",
+    url: "/user/addUser",
     method: "post",
-    data:data,
-
+    params:{
+         visitorname : visitor.visitorname,
+         visitorpwd : visitor.visitorpwd,
+         avatar : visitor.avatar,
+         email : visitor.email,
+         visitorroleid : visitor.visitorroleid
+    }
   })
 }
 

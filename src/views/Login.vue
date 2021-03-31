@@ -92,7 +92,6 @@
                      console.log(data);
                      this.$store.commit("login",data.data.user);
                      this.$store.commit("userRoles", data.data.roles);
-                     console.log(data.data.roles);
                      this.$message.success(data.message);
                       setTimeout(() =>{
                       this.$router.push("/home");
