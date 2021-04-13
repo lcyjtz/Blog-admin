@@ -4,7 +4,6 @@
       <i  @click="collapse" :class="isFold"/>
     </div>
     <el-menu
-
             default-active="1"
             class="el-menu-sidebar"
             background-color="#304156"
@@ -31,8 +30,10 @@
       //判断缓存里面有没有菜单列表 有的话就直接赋值
       // 没有的话重新请求
       const {menuList}= this.$store.state.menuList;
-       if( menuList!=null){
-         this.menuList=menuList;
+       if( menuList!=null){ 
+          var userRole = this.$store.state.userRoles[0];
+          this.getMenuList(userRole);
+       // this.menuList=menuList;
        }else {
          var userRole = this.$store.state.userRoles[0];
          this.getMenuList(userRole);

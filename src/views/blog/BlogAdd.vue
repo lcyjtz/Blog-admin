@@ -5,7 +5,7 @@
     align-items: center;
     margin-bottom: 1.25rem;">
       <el-input
-              v-model="article.articleTitle"
+              v-model="article.articletitle"
               size="medium"
               placeholder="输入文章标题"
       />
@@ -14,7 +14,7 @@
               type="primary"
               size="medium"
               class="save-btn"
-              v-if="article.isDraft==0"
+              v-if="article.isdraft==0"
       >保存草稿
       </el-button>
       <el-button
@@ -30,7 +30,7 @@
 
     <mavon-editor
             style="min-height: 500px;padding: 0;margin: 0"
-            v-model="article.articleContent"
+            v-model="article.articlecontent"
             :ishljs="true"
             ref=md
             @change="change"
@@ -47,12 +47,12 @@
         <!-- 文章数据 -->
         <el-form label-width="80px" size="medium" :model="article">
           <el-form-item label="文章分类">
-            <el-select v-model="article.categoryId" placeholder="请选择分类">
+            <el-select v-model="article.articlecategcry" placeholder="请选择分类">
               <el-option
                       v-for="item in categoryList"
-                      :key="item.categoryId"
-                      :label="item.categoryName"
-                      :value="item.categoryId"
+                      :key="item.id"
+                      :label="item.categcry"
+                      :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -64,9 +64,9 @@
             >
               <el-option
                       v-for="item in tagList"
-                      :key="item.tagId"
-                      :label="item.tagName"
-                      :value="item.tagId"
+                      :key="item.id"
+                      :label="item.typename"
+                      :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -78,13 +78,13 @@
                     multiple
                     :on-success="uploadCover"
             >
-              <i class="el-icon-upload" v-if="article.articleCover == ''" />
-              <div class="el-upload__text" v-if="article.articleCover == ''">
+              <i class="el-icon-upload" v-if="article.articlefilename == ''" />
+              <div class="el-upload__text" v-if="article.articlefilename == ''">
                 将文件拖到此处，或<em>点击上传</em>
               </div>
               <img
                       v-else
-                      :src="article.articleCover"
+                      :src="article.articlefilename"
                       width="360px"
                       height="180px"
               />
@@ -92,7 +92,7 @@
           </el-form-item>
           <el-form-item label="置顶">
             <el-switch
-                    v-model="article.isTop"
+                    v-model="article.istop"
                     active-color="#13ce66"
                     inactive-color="#F4F4F5"
                     :active-value="1"
@@ -147,14 +147,14 @@
         images:[] ,//存储图片的数组
         //新增博客属性列表
         article:{
-          articleId:null ,//博客id
-          articleTitle: "" ,//博客标题
-          articleContent:"",//博客内容
-          articleCover:"",//博客封面
-         categoryId:"",//分类id
+          articleid:null ,//博客id
+          articletitle: "" ,//博客标题
+          articlecontent:"",//博客内容
+          articlefilename:"",//博客封面
+         articlecategcry:"",//分类id
          tagIdList:[] ,//标签id列表
-         isTop:0,//是否置顶
-         isDraft:0 //是否存草稿
+         istop:0,//是否置顶
+         isdraft:0 //是否存草稿
         },
         //分类列表
         categoryList:[],
@@ -171,7 +171,7 @@
       //获取标签列表
       async getTagList(){
         const{data} =  await getTagList();
-        if(data.success){
+        if(data.status){
           this.tagList=data.data.data;
         } else{
           this.$message.error("获取标签列表失败");
@@ -180,7 +180,7 @@
       //获取分类列表
       async getCategoryList(){
         const{data} =  await getCategoryList();
-        if(data.success){
+        if(data.status){
           this.categoryList=data.data.data;
         } else{
           this.$message.error("获取分类列表失败");
@@ -200,7 +200,7 @@
       //更新或者保存文章
       async saveOrUpdateArticle(){
        const {data} = await saveOrUpdateArticle(this.article);
-       if(data.success){
+       if(data.status){
          this.$notify.success({
            title: "成功",
            message: "发布成功",
